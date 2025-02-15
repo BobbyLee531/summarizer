@@ -29,7 +29,7 @@ pip install -r requirements.txt
 ## **运行项目**  
 ### **1. 启动后端（Flask）**  
 ```bash
-python main.py
+python3 main.py
 ```
 后端将在 `http://127.0.0.1:5000/` 运行。  
 
