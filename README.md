@@ -15,7 +15,7 @@
 ### **1. 克隆项目**  
 ```bash
 git clone https://github.com/BobbyLee531/summarizer.git
-cd summarize
+cd summarizer
 ```
 
 ### **2. 安装 Python 依赖**  
