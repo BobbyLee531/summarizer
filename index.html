@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ai summarize</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background-color: #f0f0f0;
+        }
+
+        .container {
+            display: flex;
+            gap: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .box {
+            flex: 1;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        textarea {
+            width: 100%;
+            height: 300px;
+            padding: 15px;
+            border: 2px solid #007bff;
+            border-radius: 6px;
+            font-size: 16px;
+            resize: vertical;
+        }
+
+        #output {
+            border: 2px solid #28a745;
+            border-radius: 6px;
+            background-color: #f8f9fa;
+            min-height: 300px;
+            padding: 15px;
+            font-size: 16px;
+            overflow-y: auto;
+        }
+
+        h2 {
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        button {
+            margin-top: 15px;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+
+        #output h1,
+        #output h2,
+        #output h3,
+        #output h4,
+        #output h5,
+        #output h6 {
+            margin-top: 1em;
+            margin-bottom: 0.5em;
+            line-height: 1.2;
+        }
+
+        #output p {
+            margin: 0.5em 0;
+            line-height: 1;
+        }
+
+        #output ul,
+        #output ol {
+            margin: 0.5em 0;
+            padding-left: 2em; 
+            line-height: 1;
+        }
+
+        #output li {
+            margin: 0.25em 0;
+        }
+
+        #output code {
+            background-color: #f0f0f0;
+            padding: 0.2em 0.4em;
+            border-radius: 3px;
+            font-family: monospace;
+        }
+
+        #output pre {
+            background-color: #f0f0f0;
+            padding: 1em;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+
+        #output blockquote {
+            margin: 0.5em 0;
+            padding-left: 1em;
+            border-left: 3px solid #ccc;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="box">
+            <h2>速记本</h2>
+            <textarea id="input" placeholder="在此输入..."></textarea>
+            <button id="summarize-btn">总结</button>
+        </div>
+        <div class="box">
+            <h2>AI总结</h2>
+            <div id="output">等待输入...</div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script>
+        const input = document.getElementById('input');
+        const output = document.getElementById('output');
+        const summarizeBtn = document.getElementById('summarize-btn');
+        
+
+        // 监听按钮点击事件
+        summarizeBtn.addEventListener('click', async () => {
+        const inputText = input.value;
+
+        if (!inputText.trim()) {
+            output.textContent = '请输入内容后再点击总结。';
+            return;
+        }
+
+        // 禁用按钮并显示加载状态
+        summarizeBtn.disabled = true;
+        summarizeBtn.textContent = '总结中...';
+        output.textContent = '总结中...';
+
+        try {
+            // 调用后端 API
+            const response = await fetch('http://127.0.0.1:5000/process', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ input: inputText }),
+            });
+
+            const data = await response.json();
+            output.innerHTML = marked.parse(data.output); // 显示后端返回的结果
+        } catch (error) {
+            output.textContent = '请求失败，请检查后端服务是否运行。';
+            console.error('请求失败:', error);
+        } finally {
+            // 恢复按钮状态
+            summarizeBtn.disabled = false;
+            summarizeBtn.textContent = '总结';
+        }
+    });
+    </script>
+</body>
+</html>
